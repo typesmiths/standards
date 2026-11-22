@@ -1,0 +1,54 @@
+# Typesmiths standards
+
+The rules every Typesmiths TypeScript project follows: classes with one job each, talking through strict interfaces; files named for what they hold; modules cut by domain; tests beside the code. Each project installs them as a package and takes new versions as dependency updates, so a rule changes in one place and reaches every project through its own pull request and CI.
+
+**[Read the rules](rules/)**, starting with [code](rules/code.md). Copy from the [samples](rules/samples.md); check against the [do's and don'ts](rules/dos-and-donts.md).
+
+## Use it in a project
+
+1. **Install it** as a dev dependency:
+
+   ```bash
+   pnpm add -D @decohere/standards
+   ```
+
+   Until the first npm release, install a tag from GitHub instead: `pnpm add -D github:typesmiths/standards#v0.1.0`.
+
+2. **Point the project's agents at it.** In `AGENTS.md`, before the project's own rules:
+
+   ```markdown
+   Before changing code, read the shared rules in `node_modules/@decohere/standards/rules/README.md`,
+   in the order it gives. This file adds what is particular to this project; where it is silent,
+   the shared rules apply.
+   ```
+
+   Claude Code can also load them every session: in `.claude/CLAUDE.md`, add the line `@../node_modules/@decohere/standards/rules/README.md`.
+
+3. **Take updates automatically.** Add `.github/dependabot.yml`, or add this entry to it:
+
+   ```yaml
+   version: 2
+   updates:
+     - package-ecosystem: npm
+       directory: /
+       schedule:
+         interval: daily
+       allow:
+         - dependency-name: "@decohere/standards"
+   ```
+
+   Each new version arrives as a pull request. The [changelog](CHANGELOG.md) in it says what changed; CI runs the project's own checks against it.
+
+4. **Keep the project's own guide short.** It lists what is particular to the project (its modules, extra file roles, where it differs on purpose) and links here for everything else. It doesn't copy these rules: a copy drifts.
+
+## Versions
+
+Semantic versions. A patch rewords without changing a rule. A minor adds a rule or an example. A major changes or removes a rule, so code that followed the old one breaks the new one; its changelog entry says what to change. Before 1.0, a minor may also change a rule.
+
+## Change a rule
+
+Open a pull request here. Say which project showed the need, and give the shape to write and the one to avoid. When it merges, a release is a version bump in `package.json`, a changelog entry and a tag (`git tag v0.2.0 && git push --tags`); [publish](.github/workflows/publish.yml) puts it on npm.
+
+## Working on this repo
+
+[AGENTS.md](AGENTS.md) has the instructions. `pnpm check` runs Prettier and checks every relative link.

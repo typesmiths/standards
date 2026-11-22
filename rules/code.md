@@ -1,0 +1,58 @@
+# Code
+
+How TypeScript is written in a Typesmiths project: classes with one job each, talking through strict interfaces, constructor injection and events. A project's own guide adds what is particular to it and never contradicts this page.
+
+## One class per job
+
+1. **Every thing with state, a lifecycle, more than one implementation or a rule is a class with one job, named for it.** An order, a fill, an account, a router, a clock. One class defines each concept, in the module that owns it. There is no second `Order`, no per-caller copy, and no copy of its rules beside the caller.
+2. **An object's behaviour is that object's job alone.** Its state is private, with read-only getters where others need to see it. Others ask it questions or tell it to do something through its methods; nobody reads its fields to decide for it. A calculation is a method on the thing it is about.
+3. **What kinds share is an abstract base class**, not a helper module they all import. The base says what every kind must do, and each kind says how: `LimitOrder extends Order`, `TopCarryStrategy extends FundingArbAlgo`. A base lives in the module whose kinds extend it, and nothing is shared between modules until a second module really needs it.
+4. **A service is an interface and a token, implemented by one injected class.** The token sits beside its interface, named `<Thing>Token`. Consumers depend on the interface, never on the class or its files.
+5. **Collaborators do mechanics or answer questions; they don't decide for their caller.** The trading service knows what a limit order is and places it; whether to place one is the strategy's decision.
+6. **Classes talk through constructor injection or events.** A dependency arrives through the constructor as an interface. Something that has happened (an order filled, a price moved) is an event its owner publishes and others subscribe to. Nothing looks anything up: no `container.resolve` outside the composition root.
+7. **Every running process is a service with a start and a stop.** A poller, a watcher, a scheduled job: one class with `start()` and `stop()`, its schedule and status its own private state.
+8. **Many objects of one kind are built by that kind's factory.** Dependency injection makes services, one each; a factory, itself injected, makes the entities or algos there can be many of. Static `create` and `restore` are fine on entities and values with no service dependencies.
+
+## Loose functions
+
+A loose exported function is only one of:
+
+- a plugin factory, whose result goes into another tool's list of plugins (`typeOrm()`, Vite's `plugins: [react()]`);
+- a decorator (`@injectable()`);
+- a `define…` helper whose result is data (`defineConfig`, `defineMigration`);
+- an `is…` or `has…` predicate;
+- mechanics with no domain meaning (`sleep`, a byte encoder).
+
+Anything that knows a domain word (a price, a fee, a route, a version) is a method on the class that owns that word. A group of related functions is a class, not a namespace object (`export const orders = { place, cancel }`) and not a class of static methods (`OrderUtils`). A `const` typed by an interface (`export const postgres: DatabaseSupport = { … }`) is a value implementing it, not a namespace object.
+
+## Names
+
+Functions do something; everything else is something.
+
+- **Functions and methods are verbs:** `findWorkspaceRoot`, `place`, `build`. A predicate asks a question: `isExpired`, `hasEntry`.
+- **Classes, types, values and getters are nouns:** `router.match(…)` reads "router: match"; `order.price` is a property.
+- **Plugin factories are named for what they add**, as the tool's own plugins are: `.use(memory({ … }))`, not `createMemoryPlugin()`.
+- **Interfaces have no `I` prefix**, as in TypeScript's own libraries: `Clock`, not `IClock`. An implementation is named for how it differs (`SystemClock`, `FixedClock`), and its token is `ClockToken`.
+- **Errors are classes whose names end in `Error`**, one per file, thrown and never swallowed.
+- Files and folders: [files and folders](files-and-folders.md).
+
+## Errors
+
+- **Throw a named error** a caller can catch by type, never a string or a bare `Error` told apart by its message. Pass the cause on (`{ cause }`).
+- **Never silence an error to get past it:** no empty `catch`, no listener that only logs and carries on, no `any` or `@ts-expect-error` to turn a check green. The boundary (a request handler, a process's entry) logs and answers; nothing below it swallows.
+
+## The environment
+
+- **Library and domain code never reads `process.env`.** The entry point or a config source reads the environment once and passes values in. Code that needs to know whether it runs in development takes that as a constructor argument.
+- **No test-only or CI-only branches** in product code, and no side effects on import.
+- **Secrets come only from the process environment**, never from a file the code reads on its own, and are never printed or committed.
+
+## Language
+
+- ES modules, with `.js` extensions in TypeScript import paths.
+- `const`, and `let` only for a value that is reassigned. Never `var`.
+- Return early: handle the case that ends a function first, so the main path isn't nested.
+- One `Map` lookup with a null guard, not `has` and then `get!`.
+- Never `import type` a class that is injected through its constructor: the import is erased, and the injector loses the type it reads.
+
+The [do's and don'ts](dos-and-donts.md) show each of these as code.

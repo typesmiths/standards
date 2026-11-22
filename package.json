@@ -1,0 +1,23 @@
+{
+  "name": "@decohere/standards",
+  "version": "0.1.0",
+  "description": "Typesmiths' shared rules for TypeScript code: classes with one job, file names, modules, tests.",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typesmiths/standards.git"
+  },
+  "type": "module",
+  "files": [
+    "rules",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "check": "prettier --check . && node scripts/check-links.mjs"
+  },
+  "devDependencies": {
+    "prettier": "3.9.10"
+  },
+  "packageManager": "pnpm@10.34.6"
+}
