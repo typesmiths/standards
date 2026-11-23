@@ -14,7 +14,9 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "check": "prettier --check . && node scripts/check-links.mjs"
+    "check": "prettier --check . && node scripts/check-links.mjs",
+    "test": "node --test \"scripts/*.test.mjs\"",
+    "check:version": "node scripts/check-version.mjs"
   },
   "devDependencies": {
     "prettier": "3.9.10"
