@@ -56,4 +56,4 @@ A project may add roles of its own (ledger has `.algo.ts` and `.venue.ts`). It l
 ## Packages and modules
 
 - **A package or module has one job.** A base package holds contracts; provider packages implement them. Only the composition root names a provider.
-- **Dependencies run one way.** In an application, a module is split by role: `<module>.contracts` (interfaces, tokens, events and the shapes other modules and clients use), `<module>.domain` (everything that decides) and `<module>.api` (the edge: controllers, contract providers, migrations, handlers, the module's entry). `domain ← api → contracts`, and other modules import only `*.contracts`. More in [modules](modules.md).
+- **Dependencies run one way.** In an application, a module is split by role: `<module>.contracts` (interfaces, tokens, events and the shapes other modules and clients use), `<module>.domain` (everything that decides) and `<module>.api` (the edge: providers, controllers, migrations, handlers, the module's entry). `domain ← api → contracts`, and other modules import only `*.contracts`. More in [modules](modules.md).
