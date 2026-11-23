@@ -1,10 +1,10 @@
-// Checks a change's version, so that merging it to main publishes what it should. Every merge to
-// main publishes package.json's version if npm doesn't have it yet (.github/workflows/publish.yml),
+// Checks a release's version, so that merging it to release publishes what it should. Every merge to
+// release publishes package.json's version if npm doesn't have it yet (.github/workflows/publish.yml),
 // so a change to rules/ must raise the version, and every new version needs its changelog entry.
 // Two changes raising to the same version can't both land: in the merge queue the second one meets
 // the first's version already on npm, and fails here.
 //
-//   node scripts/check-version.mjs [<base>]   base: what the change is compared with (origin/main)
+//   node scripts/check-version.mjs [<base>]   base: what the release is compared with (origin/release)
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -71,7 +71,7 @@ function publishedVersions(name) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-	const base = process.argv[2] ?? "origin/main";
+	const base = process.argv[2] ?? "origin/release";
 	const { name, version } = JSON.parse(readFileSync("package.json", "utf8"));
 	const changed = execFileSync(
 		"git",
