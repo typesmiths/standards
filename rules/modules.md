@@ -11,8 +11,8 @@ How an application is cut into modules, and how they meet. It is domain-driven d
 ## How modules meet
 
 - **Through contracts.** A module publishes interfaces, tokens, events and the shapes they carry in its `<module>.contracts` package. Other modules import nothing else from it. A contract is plain data in and out, written to travel: today a call may be in-process, later the same contract goes over a service bus, so it never carries a live object.
-- **Each shape is declared once, in the contracts.** A request is one class that serves both the controller and the client: it carries the HTTP framework's decorators, which is the one dependency a contracts package may take. Never a type in the contracts and a copy of it at the edge or in a client.
-- **Through events, for what has happened.** The owner publishes a domain event; others subscribe. An event names a fact in the domain's words (`OrderFilled`), never a command in disguise.
+- **Each shape is declared once, in the contracts.** A request is one class that serves both the controller and the client: it carries the HTTP framework's decorators, which is the one dependency a contracts package may take. Never a type in the contracts and a copy of it at the edge or in a client. The domain's objects and events aren't copies: they are the domain's own, and the api maps them to the contract's shapes.
+- **Through events, for what has happened.** The owner's domain raises its event, its api maps it to the contract's event and publishes it, and others subscribe. An event names a fact in the domain's words (`OrderFilled`), never a command in disguise.
 - **The consumer's expectations live beside the provider**, as `<consumer>.contract.spec.ts`. A change that breaks a consumer fails in the provider's own tests.
 
 ## Inside a module
@@ -27,8 +27,8 @@ How an application is cut into modules, and how they meet. It is domain-driven d
 - **Every caller goes through the interface.** A page calls the controller over HTTP. Another module injects the interface's token: in one process it gets the provider itself; when the modules are separate services it gets an HTTP client implementing the same interface, which calls the controller and gets the same answer. Only that binding changes.
 - **Querying another module:** ask it directly through its interface. Keep a copy of its data, fed by its events, only where a read is too hot to ask each time. The bus carries events, not queries.
 - **A domain is cut by subdomain first**, then by kind inside each: `entities/`, `values/`, `services/`, `strategies/`, `factories/`, `repositories/`, `errors/`, `testing/`, only the kinds it has.
-- **An api is laid out by kind:** `controllers/`, `tables/`, `migrations/`, `handlers/`, `publishers/`, `processes/`, `testing/`, with the module's `.module.ts` and config at its root.
-- **One repository per aggregate root**, in the domain. An entity carries its own table mapping, as the ORM's decorators on its class: that is the one outside package a domain may import, and only for that. No second class or schema per table. Several storage providers can read the same decorators.
+- **An api is laid out by kind:** `controllers/`, `providers/`, `migrations/`, `handlers/`, `publishers/`, `processes/`, `testing/`, with the module's `.module.ts` and config at its root.
+- **One repository per aggregate root**, in the domain. An entity carries its own table mapping, as the ORM's decorators on its class: that is the one outside package a domain may import, and only for that. No second class or schema per table.
 
 ## HTTP
 

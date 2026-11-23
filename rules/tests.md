@@ -7,5 +7,5 @@
 - **An interface with several implementations has one suite of cases** (`<thing>.cases.ts`, in `testing/`) that each implementation runs.
 - **A consumer's expectations of a provider** live beside the provider as `<consumer>.contract.spec.ts`.
 - **A bug fix starts with a test that fails** for the reason the bug report gives. Run it and see it fail, fix the code, then run the same test and see it pass.
-- **Batch the work, then test once.** Make the whole change, in a few commits, with no checks between them; then run the typecheck, the tests related to the changed files and the contract tests your change can break, once. A module's whole suite and the full suite run in CI, on the push. A bug's failing test is the exception: it runs before the fix and after it.
+- **Batch the work, then test once.** Make the whole change, in a few commits, with no checks between them; then run the typecheck, the tests related to the changed files and the contract tests your change can break, once. A module's whole suite and the full suite run in CI, on the push. A check between commits repeats what the final run covers, and on a machine several sessions share, it slows them all. A bug's failing test is the exception: it runs before the fix and after it.
 - **No test-only branches in product code.** If a test needs a seam, the seam is a constructor argument.

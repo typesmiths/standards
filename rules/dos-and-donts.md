@@ -75,7 +75,7 @@ export class StringUtils {
 }
 ```
 
-**Do take what a class needs through its constructor.** Don't reach for the container, a module-level singleton or `process.env` inside it: a test then has to know what the class secretly reads.
+**Do take what a class needs through its constructor.** Don't reach for the container, a module-level singleton or `process.env` inside it: a test then has to know what the class secretly reads. A class that begins a scope per piece of work takes a scope factory through its constructor too ([lifetimes](code.md#lifetimes)).
 
 ```ts
 // Do
