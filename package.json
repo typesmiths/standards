@@ -1,6 +1,6 @@
 {
   "name": "@decohere/standards",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Typesmiths' shared rules for TypeScript code: classes with one job, file names, modules, tests.",
   "license": "ISC",
   "repository": {

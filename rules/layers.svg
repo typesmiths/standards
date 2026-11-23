@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 850" width="1000" height="850" role="img" aria-labelledby="title desc">
+  <title id="title">A module's layers</title>
+  <desc id="desc">Every caller reaches a module through its contract interfaces, answered by the module's providers, which call domain services and map domain objects to the contract's DTOs. The page goes over HTTP to a thin controller that delegates to a provider. Another module resolves the same interface: in-process today it gets the provider itself; later it gets an HTTP client that calls the controller and receives the same DTO. Events travel over a service bus to a bus handler. A backend for frontend is an open question. Services use repositories and return domain objects; the domain imports no contract types.</desc>
+  <style>
+    svg { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .bg { fill: #f6f7fa; }
+    .halo { paint-order: stroke; stroke: #f6f7fa; stroke-width: 5px; stroke-linejoin: round; }
+    .f-fg { fill: #18202e; } .s-fg { stroke: #18202e; }
+    .f-muted { fill: #5d6779; } .s-muted { stroke: #5d6779; }
+    .f-panel { fill: #ffffff; }
+    .f-http { fill: #2357d1; } .s-http { stroke: #2357d1; }
+    .f-mod { fill: #9a5b12; } .s-mod { stroke: #9a5b12; }
+    .f-contract { fill: #e6edfc; }
+    .f-frame { fill: #eef0f5; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #11151d; }
+      .halo { stroke: #11151d; }
+      .f-fg { fill: #e4e8f0; } .s-fg { stroke: #e4e8f0; }
+      .f-muted { fill: #98a2b5; } .s-muted { stroke: #98a2b5; }
+      .f-panel { fill: #181e29; }
+      .f-http { fill: #7ea3ff; } .s-http { stroke: #7ea3ff; }
+      .f-mod { fill: #e0a35a; } .s-mod { stroke: #e0a35a; }
+      .f-contract { fill: #1d2a45; }
+      .f-frame { fill: #151a24; }
+    }
+  </style>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-http" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-mod" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-fg" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="aq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="f-muted" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+  <rect class="bg" width="1000" height="850"/>
+
+  <!-- Callers -->
+  <rect class="f-panel s-http" x="60" y="20" width="220" height="60" rx="6" stroke-width="1.5"/>
+  <text class="f-fg" x="170" y="45" font-size="14" font-weight="700" text-anchor="middle">The page</text>
+  <text class="f-muted" x="170" y="64" font-size="12" text-anchor="middle">a web app</text>
+
+  <rect class="f-panel s-muted" x="390" y="20" width="220" height="60" rx="6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text class="f-fg" x="500" y="45" font-size="14" font-weight="700" text-anchor="middle">Backend for frontend</text>
+  <text class="f-muted" x="500" y="64" font-size="12" text-anchor="middle">optional</text>
+
+  <rect class="f-panel s-mod" x="720" y="20" width="220" height="60" rx="6" stroke-width="1.5"/>
+  <text class="f-fg" x="830" y="45" font-size="14" font-weight="700" text-anchor="middle">Another module</text>
+  <text class="f-muted" x="830" y="64" font-size="12" text-anchor="middle">injects orders' interface</text>
+
+  <line class="s-muted" x1="280" y1="50" x2="388" y2="50" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#aq)"/>
+  <text class="f-muted halo" x="334" y="42" font-size="11" text-anchor="middle">optional</text>
+
+  <!-- Module frame -->
+  <rect class="f-frame s-muted" x="20" y="160" width="960" height="670" rx="10" stroke-width="1"/>
+  <text class="f-fg" x="260" y="186" font-size="14" font-weight="700">A module (orders)</text>
+
+  <!-- Routes in (drawn before the contracts strip so they cross it) -->
+  <line class="s-http" x1="170" y1="80" x2="170" y2="293" stroke-width="2" marker-end="url(#ah)"/>
+  <text class="f-http halo" x="180" y="104" font-size="12">HTTP</text>
+
+  <path class="s-mod" d="M 780 80 L 780 136 L 174 136" fill="none" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#am)"/>
+  <text class="f-mod halo" x="770" y="128" font-size="12" text-anchor="end">as services: an HTTP client, same DTO</text>
+
+  <line class="s-muted" x1="500" y1="80" x2="500" y2="293" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#aq)"/>
+  <text class="f-muted halo" x="510" y="104" font-size="12">service bus: events</text>
+
+  <line class="s-mod" x1="880" y1="80" x2="880" y2="413" stroke-width="2" marker-end="url(#am)"/>
+  <text class="f-mod halo" x="888" y="104" font-size="12">in one process</text>
+
+  <!-- Contracts strip -->
+  <rect class="f-contract s-fg" x="40" y="200" width="920" height="60" rx="6" stroke-opacity=".35"/>
+  <text class="f-fg halo" x="56" y="224" font-size="13" font-weight="700">orders.contracts</text>
+  <text class="f-fg halo" x="56" y="246" font-size="12">an interface per aggregate (Orders, Fills…) with its token, its requests, its DTOs and its events</text>
+
+  <!-- Edge adapters -->
+  <rect class="f-panel s-http" x="60" y="295" width="220" height="64" rx="6" stroke-width="1.5"/>
+  <text class="f-fg" x="170" y="322" font-size="14" font-weight="700" text-anchor="middle">Controller</text>
+  <text class="f-muted" x="170" y="342" font-size="12" text-anchor="middle">thin HTTP adapter</text>
+
+  <rect class="f-panel s-muted" x="390" y="295" width="220" height="64" rx="6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text class="f-fg" x="500" y="322" font-size="14" font-weight="700" text-anchor="middle">Bus handler</text>
+  <text class="f-muted" x="500" y="342" font-size="12" text-anchor="middle">optional</text>
+
+  <text class="f-muted" x="640" y="322" font-size="12" font-weight="700">orders.api</text>
+  <text class="f-muted" x="640" y="340" font-size="12">the edge</text>
+
+  <line class="s-fg" x1="170" y1="359" x2="170" y2="413" stroke-width="1.5" marker-end="url(#af)"/>
+  <text class="f-fg halo" x="180" y="391" font-size="12">delegates</text>
+  <line class="s-muted" x1="500" y1="359" x2="500" y2="413" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#aq)"/>
+
+  <!-- Providers -->
+  <rect class="f-panel s-fg" x="60" y="415" width="880" height="64" rx="6" stroke-width="2"/>
+  <text class="f-fg" x="500" y="442" font-size="14" font-weight="700" text-anchor="middle">Providers: implement the contract's interfaces</text>
+  <text class="f-muted" x="500" y="462" font-size="12" text-anchor="middle">call services, map domain objects to DTOs; every caller gets the same DTO</text>
+
+  <line class="s-fg" x1="500" y1="479" x2="500" y2="533" stroke-width="1.5" marker-end="url(#af)"/>
+  <text class="f-fg halo" x="510" y="511" font-size="12">calls</text>
+
+  <!-- Domain -->
+  <text class="f-muted" x="60" y="526" font-size="12" font-weight="700">orders.domain: pure logic</text>
+  <rect class="f-panel s-fg" x="60" y="535" width="880" height="64" rx="6" stroke-opacity=".6" stroke-width="1.5"/>
+  <text class="f-fg" x="500" y="562" font-size="14" font-weight="700" text-anchor="middle">Services</text>
+  <text class="f-muted" x="500" y="582" font-size="12" text-anchor="middle">one per piece of work; return domain objects, never DTOs</text>
+
+  <line class="s-fg" x1="270" y1="599" x2="270" y2="638" stroke-width="1.5" marker-end="url(#af)"/>
+  <text class="f-fg halo" x="280" y="624" font-size="12">find, add</text>
+  <line class="s-fg" x1="730" y1="599" x2="730" y2="638" stroke-width="1.5" marker-end="url(#af)"/>
+  <text class="f-fg halo" x="740" y="624" font-size="12">ask their verbs</text>
+
+  <rect class="f-panel s-fg" x="60" y="640" width="420" height="64" rx="6" stroke-opacity=".6" stroke-width="1.5"/>
+  <text class="f-fg" x="270" y="667" font-size="14" font-weight="700" text-anchor="middle">Repositories</text>
+  <text class="f-muted" x="270" y="687" font-size="12" text-anchor="middle">one per aggregate root</text>
+
+  <rect class="f-panel s-fg" x="520" y="640" width="420" height="64" rx="6" stroke-opacity=".6" stroke-width="1.5"/>
+  <text class="f-fg" x="730" y="667" font-size="14" font-weight="700" text-anchor="middle">Entities and values</text>
+  <text class="f-muted" x="730" y="687" font-size="12" text-anchor="middle">the state and its rules; mapped by their own decorators</text>
+
+  <line class="s-fg" x1="480" y1="672" x2="518" y2="672" stroke-width="1.5" marker-end="url(#af)"/>
+  <line class="s-fg" x1="270" y1="704" x2="270" y2="743" stroke-width="1.5" marker-end="url(#af)"/>
+  <text class="f-fg halo" x="280" y="729" font-size="12">the unit of work commits</text>
+
+  <rect class="f-panel s-fg" x="60" y="745" width="880" height="56" rx="6" stroke-opacity=".6" stroke-width="1.5"/>
+  <text class="f-fg" x="500" y="769" font-size="14" font-weight="700" text-anchor="middle">The module's database schema</text>
+  <text class="f-muted" x="500" y="788" font-size="12" text-anchor="middle">no other module reads it</text>
+
+  <text class="f-muted" x="40" y="822" font-size="11">Solid: always. Dashed: optional, or once modules are separate services.</text>
+</svg>

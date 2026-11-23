@@ -61,7 +61,9 @@ export abstract class Order {
 	public abstract canFillAt(price: Price): boolean;
 
 	public fill(price: Price): Fill {
-		if (!this.canFillAt(price)) throw new OrderNotFillableError(this.id, price);
+		if (!this.canFillAt(price)) {
+			throw new OrderNotFillableError(this.id, price);
+		}
 		return new Fill(this.id, this.quantity, price);
 	}
 }
@@ -104,7 +106,7 @@ export class DependencyUnavailableError extends Error {
 }
 ```
 
-**A running process.** One service with a start and a stop; its schedule and status are its own.
+**A running process.** One hosted service with a start and a stop; its schedule and status are its own. Each hunt is a per-work service in its own scope ([lifetimes](code.md#lifetimes)).
 
 ```ts
 // carry-hunt.service.ts
