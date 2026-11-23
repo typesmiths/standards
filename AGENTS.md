@@ -12,8 +12,8 @@ Shared rules for Typesmiths' TypeScript projects, published to npm as `@decohere
 
 ## Releasing
 
-A change to `rules/` adds a line to [CHANGELOG.md](CHANGELOG.md) under "Unreleased", and says whether it is a patch, minor or major ([versions](README.md#versions)). A release bumps `package.json`, moves the "Unreleased" lines under the new version, and pushes a `v<version>` tag. The publish workflow does the rest; never publish by hand.
+A change to `rules/` raises `version` in `package.json` (patch, minor or major: [versions](README.md#versions)) and adds its lines to [CHANGELOG.md](CHANGELOG.md) under a heading for that version, `## 0.2.0`, in the same pull request. CI fails a change to `rules/` that keeps a version npm already has. Pull requests land through the merge queue, and the merge publishes: [publish](.github/workflows/publish.yml) puts the version on npm and tags it `v<version>`. A merge that keeps the version publishes nothing. If two pull requests raise to the same version, the queue drops the second: raise it again. Never publish or tag by hand.
 
 ## Checks
 
-`pnpm check`: Prettier and relative links. Run it before committing.
+`pnpm check`: Prettier and relative links. `pnpm test`: the scripts' tests. `pnpm check:version`: whether the version is right for your change, against `origin/main`. Run them before committing.

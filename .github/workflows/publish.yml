@@ -1,14 +1,20 @@
-# Publishes the package when a version tag (v1.2.3) is pushed. npm trusts this workflow
-# (Trusted Publishing), so it needs no token, and every version carries provenance.
+# Every merge to main publishes package.json's version, if npm doesn't have it yet, then tags it
+# v<version>; a merge that keeps the version publishes nothing. npm trusts this workflow (Trusted
+# Publishing, tied to this file's name), so it needs no token, and every version carries provenance.
 name: publish
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
+
+# One at a time, in merge order, none cancelled: each merge's version gets its turn.
+concurrency:
+  group: publish
+  cancel-in-progress: false
 
 permissions:
-  contents: read
-  id-token: write
+  contents: write # the v<version> tag
+  id-token: write # npm's Trusted Publishing
 
 jobs:
   npm:
@@ -22,12 +28,27 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - name: The tag matches package.json
+      - name: Is this version on npm?
+        id: version
         run: |
-          version="v$(node -p 'require("./package.json").version')"
-          if [ "$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME doesn't match package.json's $version" >&2
-            exit 1
+          name=$(node -p 'require("./package.json").name')
+          version=$(node -p 'require("./package.json").version')
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+          if npm view "$name@$version" version 2>/dev/null | grep -q .; then
+            echo "$name@$version is on npm already: nothing to publish." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "publish=false" >>"$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >>"$GITHUB_OUTPUT"
           fi
-      - run: npm publish --provenance --access public
+      - if: steps.version.outputs.publish == 'true'
+        run: pnpm check
+      - if: steps.version.outputs.publish == 'true'
+        run: npm publish --provenance --access public
+      - if: steps.version.outputs.publish == 'true'
+        name: Tag the published version
+        env:
+          TAG: v${{ steps.version.outputs.version }}
+        run: |
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Published and tagged $TAG." >>"$GITHUB_STEP_SUMMARY"
