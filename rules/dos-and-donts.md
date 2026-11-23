@@ -8,8 +8,12 @@ Each with the shape to write and the one to avoid. The rules behind them are in 
 // Do
 public find(key: string): Route | undefined {
 	const route = this.routes.get(key);
-	if (route == null) return undefined;
-	if (!route.enabled) return undefined;
+	if (route == null) {
+		return undefined;
+	}
+	if (!route.enabled) {
+		return undefined;
+	}
 	return route;
 }
 
@@ -22,6 +26,25 @@ public find(key: string): Route | undefined {
 		}
 	}
 	return undefined;
+}
+```
+
+**Do put every `if`, `else` and loop body in braces**, even one statement. Without them, a line added later looks inside the condition but runs every time.
+
+```ts
+// Do
+for (const [key, row] of writes) {
+	if (row === null) {
+		table.delete(key);
+	} else {
+		table.set(key, row);
+	}
+}
+
+// Don't
+for (const [key, row] of writes) {
+	if (row === null) table.delete(key);
+	else table.set(key, row);
 }
 ```
 

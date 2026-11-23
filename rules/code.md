@@ -59,6 +59,7 @@ Functions do something; everything else is something.
 - ES modules, with `.js` extensions in TypeScript import paths.
 - `const`, and `let` only for a value that is reassigned. Never `var`.
 - Return early: handle the case that ends a function first, so the main path isn't nested.
+- Every `if`, `else` and loop body is a block in braces, even a single `return`. A body without braces looks like it holds the next line too: add a second statement to it, or an `else`, and it silently runs whatever the condition. A project's linter enforces it (`curly: "all"` in oxlint and ESLint).
 - One `Map` lookup with a null guard, not `has` and then `get!`.
 - Never `import type` a class that is injected through its constructor: the import is erased, and the injector loses the type it reads.
 
