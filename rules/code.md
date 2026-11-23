@@ -10,8 +10,15 @@ How TypeScript is written in a Typesmiths project: classes with one job each, ta
 4. **A service is an interface and a token, implemented by one injected class.** The token sits beside its interface, named `<Thing>Token`. Consumers depend on the interface, never on the class or its files.
 5. **Collaborators do mechanics or answer questions; they don't decide for their caller.** The trading service knows what a limit order is and places it; whether to place one is the strategy's decision.
 6. **Classes talk through constructor injection or events.** A dependency arrives through the constructor as an interface. Something that has happened (an order filled, a price moved) is an event its owner publishes and others subscribe to. Nothing looks anything up: no `container.resolve` outside the composition root.
-7. **Every running process is a service with a start and a stop.** A poller, a watcher, a scheduled job: one class with `start()` and `stop()`, its schedule and status its own private state.
+7. **Every running process is a hosted service with a start and a stop.** A poller, a watcher, a scheduled job: one class with `start()` and `stop()`, its schedule and status its own private state; what it does each time is a per-work service ([lifetimes](#lifetimes)).
 8. **Many objects of one kind are built by that kind's factory.** Dependency injection makes services, one each; a factory, itself injected, makes the entities or algos there can be many of. Static `create` and `restore` are fine on entities and values with no service dependencies.
+
+## Lifetimes
+
+1. **A service lives for one piece of work:** a request, a round, a job's turn. A hosted service (4) is the one that lives as long as the process. Its repositories and unit of work are that piece of work's, injected. Almost everything a request does is per piece of work.
+2. **A singleton holds only what belongs to the whole app:** its config, a client, a connection, a stream, how a process runs. Never one piece of work's state, and never a domain fact: a fact that must outlive a piece of work is kept in the database.
+3. **A service that starts a piece of work begins a scope** for it through a scope factory it takes in its constructor, resolves the per-work class from that scope, and disposes the scope when the work ends. The factory is the only way a class reaches the container. Resolving a per-work service from the root is an error.
+4. **A hosted service is a thin wrapper** around its piece of work: its schedule and how it runs are its own; what it does each time is a per-work service. Shared behaviour goes in a class that uses the current scope.
 
 ## Loose functions
 

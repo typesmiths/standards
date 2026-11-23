@@ -106,7 +106,7 @@ export class DependencyUnavailableError extends Error {
 }
 ```
 
-**A running process.** One service with a start and a stop; its schedule and status are its own.
+**A running process.** One hosted service with a start and a stop; its schedule and status are its own. Each hunt is a per-work service in its own scope ([lifetimes](code.md#lifetimes)).
 
 ```ts
 // carry-hunt.service.ts
