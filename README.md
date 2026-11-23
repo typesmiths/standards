@@ -47,7 +47,7 @@ Semantic versions. A patch rewords without changing a rule. A minor adds a rule 
 
 ## Change a rule
 
-Open a pull request here. Say which project showed the need, and give the shape to write and the one to avoid. In the same pull request, raise the version in `package.json` and add its lines to the [changelog](CHANGELOG.md). When it merges, [publish](.github/workflows/publish.yml) puts it on npm and tags it, so what's on `main` is what's on npm.
+Open a pull request here. Say which project showed the need, and give the shape to write and the one to avoid. Add its lines to the [changelog](CHANGELOG.md). Changes collect on `main`; a release is a pull request from `main` into `release` with the version raised, and merging it puts it on npm ([publish](.github/workflows/publish.yml)), so `release` is what's on npm.
 
 ## Working on this repo
 

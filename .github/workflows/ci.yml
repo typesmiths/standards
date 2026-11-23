@@ -1,6 +1,5 @@
-# Runs on every pull request, and again in the merge queue on the pull request combined with main
-# and the pull requests ahead of it, so what lands on main is what passed. The queue is what stops
-# two changes raising to the same version from both landing (scripts/check-version.mjs).
+# Runs on every pull request. A release (a pull request from main into release) also has its version
+# checked, again in the merge queue, so two releases raising to the same version can't both land.
 name: ci
 
 on:
@@ -25,7 +24,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm test
-      - name: The version is right for this change
+      - name: The version is right for this release
+        if: github.base_ref == 'release' || github.event_name == 'merge_group'
         run: node scripts/check-version.mjs "$BASE"
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
