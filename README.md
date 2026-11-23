@@ -51,4 +51,4 @@ Open a pull request here. Say which project showed the need, and give the shape 
 
 ## Working on this repo
 
-[AGENTS.md](AGENTS.md) has the instructions. `pnpm check` runs Prettier and checks every relative link.
+Open the folder in VS Code and choose **Reopen in Container**: the [dev container](.devcontainer/devcontainer.json) is Decohere's published image (Node and pnpm), and runs `pnpm install`; nothing is installed on the host. [AGENTS.md](AGENTS.md) has the instructions. `pnpm check` runs Prettier and checks every relative link.

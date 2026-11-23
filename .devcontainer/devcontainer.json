@@ -1,0 +1,45 @@
+{
+  "name": "standards",
+  // The image Decohere publishes for its projects' dev containers: Node 24, pnpm (which switches
+  // itself to package.json's packageManager), git and gh. What it lacks gets fixed there, not here.
+  // Nothing is installed on the host.
+  "image": "ghcr.io/typesmiths/decohere/devcontainer:0.0.1-dev.20261123.404",
+  "init": true,
+
+  // The repo at the same path in the container as on the host, so a path copied on either side
+  // works on the other. After the host folder is renamed or moved, rebuild the container.
+  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+  "workspaceFolder": "${localWorkspaceFolder}",
+
+  // Bind mounts fail if the host folder is missing, so make sure they exist. Claude Code keys its
+  // chats and memory in the shared ~/.claude by folder path; the dotfiles' claude-chats-link (when
+  // installed) links this path to one folder per repo, so a rename or a fresh clone keeps them.
+  "initializeCommand": "mkdir -p \"$HOME/.config/gh\" \"$HOME/.claude\" && { [ ! -x \"$HOME/.local/bin/claude-chats-link\" ] || \"$HOME/.local/bin/claude-chats-link\" '${localWorkspaceFolder}' || true; }",
+  "mounts": [
+    "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind",
+    "source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind",
+    "source=standards-history,target=/commandhistory,type=volume"
+  ],
+  "postCreateCommand": "pnpm install",
+  // Personal config (the user's CLAUDE.md, git identity and GitHub login, `claude` and Remote
+  // Control) comes from their dotfiles, through VS Code's dotfiles setting, not from this repo.
+
+  // A name to find it by, then caps, so a run here slows this container down instead of pushing
+  // the machine into swap while other repos' dev containers run beside it.
+  "runArgs": ["--hostname=standards-container", "--memory=2g", "--cpus=4"],
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "Anthropic.claude-code",
+        "vscode-icons-team.vscode-icons"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "remoteUser": "node"
+}
