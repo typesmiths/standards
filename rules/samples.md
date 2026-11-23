@@ -61,7 +61,9 @@ export abstract class Order {
 	public abstract canFillAt(price: Price): boolean;
 
 	public fill(price: Price): Fill {
-		if (!this.canFillAt(price)) throw new OrderNotFillableError(this.id, price);
+		if (!this.canFillAt(price)) {
+			throw new OrderNotFillableError(this.id, price);
+		}
 		return new Fill(this.id, this.quantity, price);
 	}
 }
