@@ -39,7 +39,9 @@ The rules every Typesmiths TypeScript project follows: classes with one job each
 
    Each new version arrives as a pull request. The [changelog](CHANGELOG.md) in it says what changed; CI runs the project's own checks against it.
 
-4. **Keep the project's own guide short.** It lists what is particular to the project (its modules, extra file roles, where it differs on purpose) and links here for everything else. It doesn't copy these rules: a copy drifts.
+4. **Link them where people look.** `pnpm exec standards link` makes `docs/standards` a link to the installed rules, so they show in the file tree and in search, and follow each new version. Commit the link. (GitHub's web view can't follow it into `node_modules`.)
+
+5. **Keep the project's own guide short.** It lists what is particular to the project (its modules, extra file roles, where it differs on purpose) and links here for everything else. It doesn't copy these rules: a copy drifts.
 
 ## Versions
 
