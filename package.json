@@ -1,6 +1,6 @@
 {
   "name": "@decohere/standards",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typesmiths' shared rules for TypeScript code: classes with one job, file names, modules, tests.",
   "license": "ISC",
   "repository": {
@@ -9,17 +9,21 @@
   },
   "type": "module",
   "files": [
+    "bin",
     "rules",
     "README.md",
     "CHANGELOG.md"
   ],
+  "devDependencies": {
+    "prettier": "3.9.10"
+  },
+  "packageManager": "pnpm@10.34.6",
+  "bin": {
+    "standards": "bin/standards.mjs"
+  },
   "scripts": {
     "check": "prettier --check . && node scripts/check-links.mjs",
     "test": "node --test \"scripts/*.test.mjs\"",
     "check:version": "node scripts/check-version.mjs"
-  },
-  "devDependencies": {
-    "prettier": "3.9.10"
-  },
-  "packageManager": "pnpm@10.34.6"
+  }
 }
