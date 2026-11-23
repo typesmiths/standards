@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Minor: every `if`, `else` and loop body is a block in braces ([code](rules/code.md#language), [do's and don'ts](rules/dos-and-donts.md)), so a line added later can't sit outside its condition while looking inside it. Lint it with `curly: "all"`. The samples follow it.
+
 ## 0.3.0
 
 - Minor: `pnpm exec standards link` links `docs/standards` in a project to the installed rules, so people find them in the file tree and in search ([use it in a project](README.md#use-it-in-a-project)).
