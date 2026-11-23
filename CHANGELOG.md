@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Minor, changes rules ([modules](rules/modules.md#inside-a-module)): the domain is pure domain logic and imports no contract type; dependencies run `domain ← api → contracts`. A controller or a contract provider calls a service, the service returns domain objects, and the edge maps them to the contract's types. Another module's call reaches a contract provider in the api, later a bus handler; contracts are plain data written to travel. Each shape is declared once, in the contracts: a request is one class for the controller and the client, carrying the HTTP framework's decorators, the one dependency a contracts package may take. An entity carries its table mapping as ORM decorators on itself; no separate mapping class.
+- Minor: [lifetimes](rules/code.md#lifetimes): services per piece of work, singletons only for app-wide state and never a domain fact, a scope begun per piece of work, hosted services as thin wrappers.
+- Minor: [tests](rules/tests.md): batch the work and test once at the end; the module's whole suite and the full suite are CI's.
+
 ## 0.3.0
 
 - Minor: `pnpm exec standards link` links `docs/standards` in a project to the installed rules, so people find them in the file tree and in search ([use it in a project](README.md#use-it-in-a-project)).
