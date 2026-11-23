@@ -17,6 +17,8 @@ How an application is cut into modules, and how they meet. It is domain-driven d
 
 ## Inside a module
 
+![A module's layers: callers reach an interface in the contracts, a provider maps, the domain returns domain objects](layers.svg)
+
 - **Projects by role.** The domain decides; the api is the edge (controllers, contract providers, migrations, handlers, publishers, running processes and the module's entry) and decides nothing. The api depends on the domain and the contracts; the domain depends on neither: `domain ← api → contracts`.
 - **The domain is pure domain logic.** It imports no contract type, neither its own module's requests and answers nor another module's interfaces. What it needs from another module it declares as its own interface, and the api implements that over the other module's contract.
 - **Each aggregate's API is an interface in the contracts**, with its token, its request classes, its answers and its events. A **provider** in the api implements it (`<aggregate>.provider.ts`): it calls the domain's services and maps the domain objects they return to the contract's answers. It is the only place that maps, so every caller gets the same answer.
