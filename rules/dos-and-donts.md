@@ -140,15 +140,15 @@ if (look.state === "sent") {
 }
 ```
 
-**Do let each kind answer for itself.** What one kind needs is a method every kind answers; the code above asks the base ([code](code.md#one-class-per-job)).
+**Do keep each kind's logic in its own class.** Shared code asks the kind; it never has a special case for one ([code](code.md#one-class-per-job)).
 
 ```ts
 // Do: the algorithm says where its money works; the route asks it.
 const place = this.algorithms.of(algo.algorithm).worksAt(algo, { exchange });
 await this.safe.send(algo.account, place, due);
 
-// Don't: a module-level service knows what today's kind trades in.
-// Drop that kind and this is left knowing an algo that no longer exists.
+// Don't: a shared service knows what today's algorithm trades in.
+// Delete that algorithm and this is left knowing about one that no longer exists.
 if (landed.coin === "USDC") {
 	await this.trading.place(buy("USDT", landed.amount));
 }
