@@ -123,3 +123,33 @@ throw new RouteConflictError(path);
 // Don't
 throw new Error(`route ${path} already exists`);
 ```
+
+**Do ask the owner for an outcome, not for its steps.** The caller names what it wants; the owner decides where it comes from and tells the caller what happened ([modules](modules.md#how-modules-meet)).
+
+```ts
+// Do: the treasury asks Funding for money back; Funding tells it each send.
+await this.funding.giveBack(account, 300);
+// …and, in Funding, as each send leaves its Safe:
+await this.treasury.givenBack({ account, module: "funding", amount, from: safe.id, tx });
+
+// Don't: the treasury picks Funding's place, finds its code by the venue's name and keeps its steps.
+const withdrawals = this.withdrawals.find((w) => w.venues.includes(place.venue));
+const look = await withdrawals.send(place, cashOut);
+if (look.state === "sent") {
+	await this.sendOnToTreasury(place, look);
+}
+```
+
+**Do let each kind answer for itself.** What one kind needs is a method every kind answers; the code above asks the base ([code](code.md#one-class-per-job)).
+
+```ts
+// Do: the algorithm says where its money works; the route asks it.
+const place = this.algorithms.of(algo.algorithm).worksAt(algo, { exchange });
+await this.safe.send(algo.account, place, due);
+
+// Don't: a module-level service knows what today's kind trades in.
+// Drop that kind and this is left knowing an algo that no longer exists.
+if (landed.coin === "USDC") {
+	await this.trading.place(buy("USDT", landed.amount));
+}
+```

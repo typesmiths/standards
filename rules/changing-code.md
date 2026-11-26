@@ -8,3 +8,5 @@ Most projects don't follow these rules everywhere yet. They get there one change
 - **Moves don't change behaviour.** A move lands behind the tests that already pass, one concept or class per change, with no behaviour change in the same change.
 - **Measure, and only go down.** Where a project counts its breaks of these rules, CI fails when a count rises, and a change that fixes one lowers the count it is measured against.
 - **A move that needs a decision stops for it.** If it's unclear who owns a fact, ask the project's owner rather than guess.
+- **Build the final state only.** No code for a state that won't exist once the change lands: old keys, leftover funds, half-moved records. Move leftovers by hand with the product's own tools, and fix the cause so the state can't come back. Transitional code outlives the transition.
+- **Finish the change, then show it.** A change is done whole: every caller, spec, story and document moved with it, then shown for review. A half-done step with a list of what's left is not a change.
