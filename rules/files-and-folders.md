@@ -2,7 +2,7 @@
 
 If you can't tell what code does from its file names, the names are wrong. Every file has one purpose, and its name says it.
 
-**Name things in the domain's words**, as the people who use the product say them: the one language a developer and the product's owner share (domain-driven design's ubiquitous language). A name taken from the mechanism (`SendingOn`, `AlgoRounds`, `VenueFactsHandler`) or a kind nobody else uses (a "process", a "plan", "cases") hides what the thing is. A standard thing keeps its standard name: a suite every implementation of an interface runs is a contract test. If a name needs explaining, it's the wrong name.
+**Use the words the business uses.** Name things the way the people who use the product talk about them. Don't name a class after how it works inside (`SendingOn`, `AlgoRounds`) or make up a term nobody else uses ("process", "plan", "cases"). Where there's a standard name, use it: a set of tests every implementation must pass is a contract test. If a name needs explaining, change it.
 
 ## File names
 
@@ -40,7 +40,7 @@ Each role means one thing. The names come from domain-driven design, ports and a
 | `.config.ts`        | the shape of a package's or module's settings, and their defaults                                                                                                         | `database.config.ts`                              |
 | `.const.ts`         | named constants of one thing                                                                                                                                              | `order-topics.const.ts`                           |
 | `.spec.ts`          | a test, beside the file it tests                                                                                                                                          | `order.entity.spec.ts`                            |
-| `.contract-test.ts` | test code only, in `__fixtures__`: a contract test, the cases every implementation of one interface passes, run by each implementation's spec                             | `order.repository.contract-test.ts`               |
+| `.contract-test.ts` | test code only, in `__fixtures__`: a contract test, the tests every implementation of one interface must pass, run from each implementation's spec                        | `order.repository.contract-test.ts`               |
 | `.fixtures.ts`      | test code only, in `__fixtures__`: recorded or made-up data                                                                                                               | `orders.fixtures.ts`                              |
 | `.harness.ts`       | test code only, in `__fixtures__`: a world several specs build on                                                                                                         | `trading.harness.ts`                              |
 | `fake-<thing>.ts`   | test code only, in `__fixtures__`, or in `testing/` when other modules' specs use it: a stand-in implementing one interface, `Fake<Thing>`                                | `fake-trading.ts`                                 |
@@ -53,7 +53,7 @@ A project may add roles of its own (ledger has `.algo.ts` and `.venue.ts`). It l
 
 - **Folders are subdomains first** (`routing/`, `auth/`, `billing/`), then kinds inside one (`entities/`, `services/`, `errors/`) once it holds several things of that kind. A subfolder inside a kind only when one object has several files.
 - **Each subdomain folder has an `index.ts`** that says what it exports. The `src/` root holds little but `index.ts`.
-- **Specs sit beside the code they test; nothing else a test needs does.** Fixtures, fakes, harnesses and contract tests go in a `__fixtures__` folder beside the spec that needs them, or beside the nearest folder that holds every spec sharing one. A code folder holds code and its specs. `e2e/` suites that drive built output sit apart.
+- **Only spec files go next to the code.** Test data, fakes and shared test setups go in a `__fixtures__` folder next to the spec that uses them. If specs in several folders share one, it goes in the `__fixtures__` of the closest folder above them all. Code folders hold code and specs, nothing else. `e2e/` suites that drive built output sit apart.
 - **A new package exists only to manage dependencies or to stop an import cycle.** A feature is a folder, not a package.
 
 ## Packages and modules

@@ -124,7 +124,7 @@ throw new RouteConflictError(path);
 throw new Error(`route ${path} already exists`);
 ```
 
-**Do ask the owner for an outcome, not for its steps.** The caller names what it wants; the owner decides where it comes from and tells the caller what happened ([modules](modules.md#how-modules-meet)).
+**Do ask another module for what you want, not how to do it.** It decides how, and tells you what happened ([modules](modules.md#how-modules-meet)).
 
 ```ts
 // Do: the treasury asks Funding for money back; Funding tells it each send.
@@ -132,7 +132,7 @@ await this.funding.giveBack(account, 300);
 // …and, in Funding, as each send leaves its Safe:
 await this.treasury.givenBack({ account, module: "funding", amount, from: safe.id, tx });
 
-// Don't: the treasury picks Funding's place, finds its code by the venue's name and keeps its steps.
+// Don't: the treasury picks Funding's account, finds Funding's code by the exchange's name and runs its steps.
 const withdrawals = this.withdrawals.find((w) => w.venues.includes(place.venue));
 const look = await withdrawals.send(place, cashOut);
 if (look.state === "sent") {
@@ -140,7 +140,7 @@ if (look.state === "sent") {
 }
 ```
 
-**Do keep each kind's logic in its own class.** Shared code asks the kind; it never has a special case for one ([code](code.md#one-class-per-job)).
+**Do put code that only one algorithm needs in that algorithm's class.** Shared code asks the algorithm; it never checks which one it has ([code](code.md#one-class-per-job)).
 
 ```ts
 // Do: the algorithm says where its money works; the route asks it.

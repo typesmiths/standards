@@ -2,13 +2,13 @@
 
 ## 0.5.0
 
-- Minor ([modules](rules/modules.md#how-modules-meet), [do's and don'ts](rules/dos-and-donts.md)): ask the owner for an outcome, never for its mechanism. A caller names what it wants in the owner's words; the owner decides how and from where, and tells it what happened. Never pick another module's places or steps, or find its code by a venue's name to drive it.
-- Minor ([code](rules/code.md#one-class-per-job), [do's and don'ts](rules/dos-and-donts.md)): each kind's own logic lives in that kind's class; shared code asks the kind and never has a special case for one, so deleting a kind deletes its logic. A Safe sends what it's asked; where money goes is its owner's.
-- Minor ([code](rules/code.md#methods-and-state)): a public method reads like a story, each step a call with explicit inputs and one result; state is kept on its owner as records of what was done, never inferred from other facts.
-- Minor ([files and folders](rules/files-and-folders.md)): names are the domain's words, the language a developer and the product's owner share; a standard thing keeps its standard name.
-- Changes rules ([tests](rules/tests.md), [files and folders](rules/files-and-folders.md#folders), [modules](rules/modules.md#inside-a-module)): only specs sit beside code; fixtures, fakes, harnesses and contract tests go in `__fixtures__` beside the spec that needs them, and `testing/` holds only the stand-ins a module publishes for others. `.cases.ts` becomes `.contract-test.ts`: it's a contract test. To change: move each test-only file next to the spec that uses it and rename `.cases.ts` files.
-- Changes rules ([tests](rules/tests.md)): one watch runs the tests your saves touch while you work, instead of batching and testing once at the end; isolate a failure by reading the code and writing the smallest test, never by rerunning. Behaviour is proved in milliseconds (no simulated waits), browser tests prove screens, and tests check what the code decides, not that a framework works. A neighbour the code asks is a fake that answers; a throwing stand-in only for one it must never reach.
-- Minor ([changing code](rules/changing-code.md)): build the final state only, with no code for leftovers; finish a change whole before showing it.
+- Minor ([modules](rules/modules.md#how-modules-meet), [do's and don'ts](rules/dos-and-donts.md)): ask another module for what you want, not how to do it. It decides how and tells you what happened.
+- Minor ([code](rules/code.md#one-class-per-job), [do's and don'ts](rules/dos-and-donts.md)): code that only one algorithm needs goes in that algorithm's class; shared code asks the algorithm and never checks which one it has. A Safe sends money where it's told; deciding where is not its job.
+- Minor ([code](rules/code.md#methods-and-state)): keep public methods short, like a list of steps; store a status instead of working it out from other data.
+- Minor ([files and folders](rules/files-and-folders.md)): use the words the business uses, and standard names where they exist.
+- Changes rules ([tests](rules/tests.md), [files and folders](rules/files-and-folders.md#folders), [modules](rules/modules.md#inside-a-module)): only spec files go next to the code; test data, fakes, setups and contract tests go in `__fixtures__` next to the spec, and `testing/` holds only fakes other modules' tests use. `.cases.ts` is now `.contract-test.ts`. To update a project: move each such file next to the spec that uses it, and rename its `.cases.ts` files.
+- Changes rules ([tests](rules/tests.md)): keep one test watcher running while you work, instead of testing once at the end. When a test fails, find the cause instead of rerunning. Tests run in milliseconds; browser tests check the screen. Test your code, not the framework. Fake what the code calls; block what it shouldn't.
+- Minor ([changing code](rules/changing-code.md)): only build the end result, and finish the whole change before showing it.
 
 ## 0.4.0
 
