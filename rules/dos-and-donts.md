@@ -124,19 +124,19 @@ throw new RouteConflictError(path);
 throw new Error(`route ${path} already exists`);
 ```
 
-**Do write the business's process, not the infrastructure's.** The code says what happens in the business; the wallet and the exchange are tools it calls ([modules](modules.md#model-the-real-world-process)).
+**Do write the business's process, not the infrastructure's.** The code says what happens in the business; the bank account and the payment provider are tools it calls ([modules](modules.md#model-the-real-world-process)).
 
 ```ts
-// Do: Funding gives an algo money; the algo says where it trades and moves its money there.
-algo.added(1_000);
-const place = this.algorithms.of(algo.algorithm).worksAt(algo, places);
-await this.safe.send(algo.account, place, algo.coming);
+// Do: a department gives a team a budget; the team says which account it spends from.
+team.budgeted(1_000);
+const account = team.spendsFrom(accounts);
+await this.bank.send(account, 1_000);
 
-// Don't: the code follows how money physically travels. Whatever lands in the wallet is
-// forwarded to the exchange and swapped to USDT, because that's what the exchange needs.
-for (const landed of await this.wallet.newTransfers()) {
-	await this.wallet.forward(landed, kucoinAddress);
-	await this.kucoin.swap("USDC", "USDT", landed.amount);
+// Don't: the code follows how money physically moves. Whatever lands in the account is
+// forwarded and converted, because that's what the other side happens to need.
+for (const landed of await this.account.newTransfers()) {
+	await this.account.forward(landed, supplierAddress);
+	await this.exchange.convert("USD", "EUR", landed.amount);
 }
 ```
 
@@ -156,16 +156,19 @@ if (look.state === "sent") {
 }
 ```
 
-**Do put code that only one algorithm needs in that algorithm's class.** Shared code asks the algorithm; it never checks which one it has ([code](code.md#one-class-per-job)).
+**Do put code that only one type needs in that type's class.** Shared code calls a method on the object; it never checks which type it has ([code](code.md#one-class-per-job)).
 
 ```ts
-// Do: the algorithm says where its money works; the route asks it.
-const place = this.algorithms.of(algo.algorithm).worksAt(algo, { exchange });
-await this.safe.send(algo.account, place, due);
+// Do: each type of order says how it's priced; shared code asks it.
+const price = order.priceFor(book);
+await this.venue.place(order, price);
 
-// Don't: a shared service knows what today's algorithm trades in.
-// Delete that algorithm and this is left knowing about one that no longer exists.
-if (landed.coin === "USDC") {
-	await this.trading.place(buy("USDT", landed.amount));
+// Don't: shared code checks the type and carries each type's logic.
+// Delete StopOrder and this is left with a branch for something that no longer exists.
+let price: Decimal;
+if (order instanceof LimitOrder) {
+	price = order.limit;
+} else {
+	price = book.bestBid;
 }
 ```

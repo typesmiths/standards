@@ -2,7 +2,7 @@
 
 If you can't tell what code does from its file names, the names are wrong. Every file has one purpose, and its name says it.
 
-**Use the words the business uses.** Name things the way the people who use the product talk about them. Don't name a class after how it works inside (`SendingOn`, `AlgoRounds`) or make up a term nobody else uses ("process", "plan", "cases"). Where there's a standard name, use it: a set of tests every implementation must pass is a contract test. If a name needs explaining, change it.
+**Use the words the business uses.** Name things the way the people who use the product talk about them. Don't name a class after how it works inside (`SendingOn`, `RowSync`) or make up a term nobody else uses ("process", "plan", "cases"). Where there's a standard name, use it: a set of tests every implementation must pass is a contract test. If a name needs explaining, change it.
 
 ## File names
 
