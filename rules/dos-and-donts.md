@@ -124,6 +124,22 @@ throw new RouteConflictError(path);
 throw new Error(`route ${path} already exists`);
 ```
 
+**Do write the business's process, not the infrastructure's.** The code says what happens in the business; the wallet and the exchange are tools it calls ([modules](modules.md#model-the-real-world-process)).
+
+```ts
+// Do: Funding gives an algo money; the algo says where it trades and moves its money there.
+algo.added(1_000);
+const place = this.algorithms.of(algo.algorithm).worksAt(algo, places);
+await this.safe.send(algo.account, place, algo.coming);
+
+// Don't: the code follows how money physically travels. Whatever lands in the wallet is
+// forwarded to the exchange and swapped to USDT, because that's what the exchange needs.
+for (const landed of await this.wallet.newTransfers()) {
+	await this.wallet.forward(landed, kucoinAddress);
+	await this.kucoin.swap("USDC", "USDT", landed.amount);
+}
+```
+
 **Do ask another module for what you want, not how to do it.** It decides how, and tells you what happened ([modules](modules.md#how-modules-meet)).
 
 ```ts

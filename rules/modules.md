@@ -1,6 +1,18 @@
 # Modules
 
-How an application is cut into modules, and how they meet. It is domain-driven design kept small: bounded contexts, one owner per fact, contracts between them.
+How an application models its business, is cut into modules, and how they meet. It is domain-driven design kept small: code that follows the real-world process, bounded contexts, one owner per fact, contracts between them.
+
+## Model the real-world process
+
+This is the core of domain-driven design, and the rule the others serve. Code describes how the business actually works: who owns what, who decides, and what happens in what order. It does not describe how the database, an exchange or a blockchain happens to work.
+
+- **Start from the real process, in the business's words.** Before writing code, say what happens: "the treasury gives Funding money; Funding shares it out to its algos; each algo moves its money to the exchange it trades on; when the owner wants money back, the treasury asks Funding for it." Each step becomes an object and a method in the code, owned by whoever owns that step in the business.
+- **Infrastructure is a tool the domain uses, not the shape of the code.** Databases, exchanges, blockchains and wallets sit underneath, behind interfaces the domain defines. Their limits (a table's columns, an exchange's minimum deposit, the coin an exchange trades in) are handled inside those tools, or decided by whoever owns that decision in the business. They never bend the process around them.
+- **Don't code to the database.** A class isn't a table row with functions attached, and a process isn't a series of table updates. Design the objects and what they do first; the tables store them afterwards.
+- **Signs you're coding to the infrastructure:** a class named after a technical step (`SendingOn`, `DepositRelay`); code that does something because of how money physically travels ("swap to USDT when it lands, because the exchange trades in USDT") rather than because someone in the business decided it; code that picks another module's code by an exchange's name; a status worked out from what's in the tables.
+- **When the two don't fit, change the infrastructure code, not the process.** If the business says an algo decides where its money goes, the wallet gets a "send this there" the algo can call. The algo isn't rewritten to suit how the wallet used to forward money.
+
+The other rules on this page, and on [code](code.md), follow from this one ([do and don't](dos-and-donts.md)).
 
 ## Cutting modules
 

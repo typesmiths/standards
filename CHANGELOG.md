@@ -2,6 +2,7 @@
 
 ## 0.5.0
 
+- Minor ([modules](rules/modules.md#model-the-real-world-process), [do's and don'ts](rules/dos-and-donts.md)): model the real-world process. Code describes how the business works (who owns what, who decides, what happens next), not how the database, an exchange or a blockchain works. Infrastructure is a tool underneath, behind interfaces the domain defines; don't code to the database. This is the rule the others serve.
 - Minor ([modules](rules/modules.md#how-modules-meet), [do's and don'ts](rules/dos-and-donts.md)): ask another module for what you want, not how to do it. It decides how and tells you what happened.
 - Minor ([code](rules/code.md#one-class-per-job), [do's and don'ts](rules/dos-and-donts.md)): code that only one algorithm needs goes in that algorithm's class; shared code asks the algorithm and never checks which one it has. A Safe sends money where it's told; deciding where is not its job.
 - Minor ([code](rules/code.md#methods-and-state)): keep public methods short, like a list of steps; store a status instead of working it out from other data.
