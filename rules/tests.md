@@ -1,11 +1,15 @@
 # Tests
 
-- **A spec sits beside the file it tests:** `order.entity.spec.ts` next to `order.entity.ts`.
-- **Test behaviour through the public face,** from the caller's seat: build the real object, use it as a caller would, check what it did and what it shows. Never test a private method or a field.
+- **A spec goes next to the file it tests:** `order.entity.spec.ts` next to `order.entity.ts`. Nothing else test-related goes there: test data, fakes and setups go in `__fixtures__` next to the spec ([files and folders](files-and-folders.md#folders)).
+- **Test behaviour through the public methods,** the way a caller uses the object: build the real thing, use it, and check what it did and what it shows. Never test a private method or a field.
 - **Prefer a test at the user's level:** an HTTP call, a command-line run, a page. Unit tests cover what those can't reach.
-- **A stand-in for a service is a small class implementing its interface,** not a mock that records calls. When both exist, the stand-in passes the same contract cases as the real one.
-- **An interface with several implementations has one suite of cases** (`<thing>.cases.ts`, in `testing/`) that each implementation runs.
-- **A consumer's expectations of a provider** live beside the provider as `<consumer>.contract.spec.ts`.
+- **Tests run in milliseconds.** To test something that waits (close a position once prices get close), set the prices close and check it closes. Don't simulate time passing or a market moving. Browser tests check what's on screen; how modules work together is checked by ordinary code tests.
+- **Test your code, not the framework.** Check that your mapping says what you meant, and that your query returns the right rows from the framework's in-memory store. Don't test that the framework saves data. Don't write a test that only repeats a line of code: it fails only when someone edits that line.
+- **A stand-in for a service is a small class implementing its interface,** not a mock that records calls. When both exist, the stand-in passes the same contract test as the real one.
+- **Fake what the code calls; block what it shouldn't.** If the code under test calls another module, give it a fake that answers properly. Use a stand-in that throws only for modules the test should never touch, so an unexpected call fails clearly.
+- **An interface with several implementations has one contract test** (`<thing>.contract-test.ts`, in `__fixtures__`) that each implementation's spec runs.
+- **A consumer's expectations of a provider** live next to the provider as `<consumer>.contract.spec.ts`.
 - **A bug fix starts with a test that fails** for the reason the bug report gives. Run it and see it fail, fix the code, then run the same test and see it pass.
-- **Batch the work, then test once.** Make the whole change, in a few commits, with no checks between them; then run the typecheck, the tests related to the changed files and the contract tests your change can break, once. A module's whole suite and the full suite run in CI, on the push. A check between commits repeats what the final run covers, and on a machine several sessions share, it slows them all. A bug's failing test is the exception: it runs before the fix and after it.
+- **Keep one test watcher running while you work** (`vitest --watch --changed`). It reruns only the tests affected by each file you save, and the project's owner can follow its output. Read failures there, and don't run tests by hand alongside it. Typecheck, format and lint when a task is done. A module's whole suite and the full suite run in CI. A bug's failing test is the exception: run it before the fix and after.
+- **When a test fails, find the cause; don't rerun.** Read the code the failure points to, and write the smallest test that shows the problem. Rerunning suites or restarting things to check a guess wastes time, and slows everyone sharing the machine.
 - **No test-only branches in product code.** If a test needs a seam, the seam is a constructor argument.

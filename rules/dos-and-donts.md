@@ -123,3 +123,52 @@ throw new RouteConflictError(path);
 // Don't
 throw new Error(`route ${path} already exists`);
 ```
+
+**Do write the business's process, not the infrastructure's.** The code says what happens in the business; the bank account and the payment provider are tools it calls ([modules](modules.md#model-the-real-world-process)).
+
+```ts
+// Do: a department gives a team a budget; the team says which account it spends from.
+team.budgeted(1_000);
+const account = team.spendsFrom(accounts);
+await this.bank.send(account, 1_000);
+
+// Don't: the code follows how money physically moves. Whatever lands in the account is
+// forwarded and converted, because that's what the other side happens to need.
+for (const landed of await this.account.newTransfers()) {
+	await this.account.forward(landed, supplierAddress);
+	await this.exchange.convert("USD", "EUR", landed.amount);
+}
+```
+
+**Do ask another module for what you want, not how to do it.** It decides how, and tells you what happened ([modules](modules.md#how-modules-meet)).
+
+```ts
+// Do: the treasury asks Funding for money back; Funding tells it each send.
+await this.funding.giveBack(account, 300);
+// …and, in Funding, as each send leaves its Safe:
+await this.treasury.givenBack({ account, module: "funding", amount, from: safe.id, tx });
+
+// Don't: the treasury picks Funding's account, finds Funding's code by the exchange's name and runs its steps.
+const withdrawals = this.withdrawals.find((w) => w.venues.includes(place.venue));
+const look = await withdrawals.send(place, cashOut);
+if (look.state === "sent") {
+	await this.sendOnToTreasury(place, look);
+}
+```
+
+**Do put code that only one type needs in that type's class.** Shared code calls a method on the object; it never checks which type it has ([code](code.md#one-class-per-job)).
+
+```ts
+// Do: each type of order says how it's priced; shared code asks it.
+const price = order.priceFor(book);
+await this.venue.place(order, price);
+
+// Don't: shared code checks the type and carries each type's logic.
+// Delete StopOrder and this is left with a branch for something that no longer exists.
+let price: Decimal;
+if (order instanceof LimitOrder) {
+	price = order.limit;
+} else {
+	price = book.bestBid;
+}
+```
