@@ -17,6 +17,7 @@
 - Minor ([tests](rules/tests.md)): name sociable, use-case tests (the testing trophy) as the default over isolated unit tests, and separate browser tests (layout, navigation, and UX only) from coded tests (UI logic and cross-module workflows on a virtual clock).
 - Minor ([modules](rules/modules.md#inside-a-module), [files and folders](rules/files-and-folders.md#folders)): split a domain into subdomains only when it has clear, sizable sub-areas; smaller single-context domains stay flat by kind directly under `src/`. Give each module directory a `README.md` and `design.svg` at its root, symlinked to `docs/domain/<module>/`.
 - Changes rules ([modules](rules/modules.md#how-modules-meet), [tests](rules/tests.md)): run one `<contract>.contract.spec.ts` conformance suite per published contract in the provider (proving real providers and exported `Fake*` stand-ins agree) instead of duplicating the suite per consumer; keep consumer-specific expectations in the consumer's own sociable tests.
+- Minor ([modules](rules/modules.md#one-code-path), [do's and don'ts](rules/dos-and-donts.md)): name the **Polymorphic Registry** pattern — put live and simulated implementations behind one interface and one registry fed by a multi-injected source port instead of parallel `Paper*` / `Live*` ports with caller mode branches, and keep Registries (system-level definitions/capabilities) separate from Repositories (per-aggregate persistence).
 
 ## 0.4.0
 
