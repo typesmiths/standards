@@ -76,7 +76,7 @@ export function joinRoutePath(parent: string, child: string): string {
 }
 ```
 
-**Don't write a utility class or a namespace object.** A class of static methods, or `export const x = { a, b }`, groups functions by how they look, not what they are about. Each method goes on the class it works on; if none exists, that class is missing.
+**Don't write a utility class or a namespace object — and never disguise one as a service.** A class of static methods (even in a `.service.ts` file), or `export const x = { a, b }`, groups functions by how they look, not what they are about. Each method goes on the value or entity it works on; if none exists, that class is missing.
 
 ```ts
 // Do: each on its own thing
