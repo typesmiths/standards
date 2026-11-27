@@ -22,25 +22,29 @@ The other rules on this page, and on [code](code.md), follow from this one ([do 
 
 ## How modules meet
 
-- **Through contracts.** A module publishes interfaces, tokens, events and the shapes they carry in its `<module>.contracts` package. Other modules import nothing else from it. A contract is plain data in and out, written to travel: today a call may be in-process, later the same contract goes over a service bus, so it never carries a live object.
-- **Each shape is declared once, in the contracts.** A request is one class that serves both the controller and the client: it carries the HTTP framework's decorators, which is the one dependency a contracts package may take. Never a type in the contracts and a copy of it at the edge or in a client. The domain's objects and events aren't copies: they are the domain's own, and the api maps them to the contract's shapes.
+- **Through contracts.** A module publishes interfaces, tokens, events and the shapes they carry in its `<module>.contracts` package. Other modules import nothing else from it — never another module's `*.domain` or `*.api`. A contract is plain, wire-safe data in and out (ISO strings for times, primitives, plain records and arrays — never `Date` or live objects): today a call may be in-process, later the same contract goes over a service bus or HTTP.
+- **Name contract shapes consistently.** Response shapes end in `Dto` (`OrderDto`, `AccountDto`), so a provider reading both domain entities and wire shapes tells them apart at a glance. Request classes are named for what they ask (`PlaceOrder`, `CancelOrder`).
+- **Each shape is declared once, in the contracts.** A request is one class that serves both the controller and the client: it carries the HTTP framework's `@Request` and `@Field` decorators (the one dependency a contracts package may take) so the HTTP edge validates wire shape once and domain services check only business rules. Never a type in the contracts and a copy of it at the edge or in a client. The domain's objects and events aren't copies: they are the domain's own, and the api maps them to the contract's shapes.
+- **Shared universal values live in a kernel; behaviour goes behind ports.** Tiny value shapes shared across many modules (`Actor`, `Clock`) live in a shared kernel so modules don't invent identical copies. Calls to another module's behaviour go through a small domain-owned port (`.port.ts`) implemented by an adapter in `*.api` over the other module's `*.contracts`.
 - **Ask another module for what you want, not how to do it.** Say what you need in its words, like "give me back 300". That module decides how to do it and tells you what happened. Don't choose its accounts, coins or steps, and don't look up its code by an exchange's name to run its steps yourself. If you do, your code breaks every time that module changes how it works ([do and don't](dos-and-donts.md)).
 - **Through events, for what has happened.** The owner's domain raises its event, its api maps it to the contract's event and publishes it, and others subscribe. An event names a fact in the domain's words (`OrderFilled`), never a command in disguise.
-- **The consumer's expectations live beside the provider**, as `<consumer>.contract.spec.ts`. A change that breaks a consumer fails in the provider's own tests.
+- **The consumer's expectations live beside the provider**, in `contract/<consumer>.contract.spec.ts`. A change that breaks a consumer fails in the provider's own tests.
 
 ## Inside a module
 
 ![A module's layers: callers reach an interface in the contracts, a provider maps, the domain returns domain objects](layers.svg)
 
-- **Projects by role.** The domain decides; the api is the edge (controllers, contract providers, migrations, handlers, publishers, running processes and the module's entry) and decides nothing. The api depends on the domain and the contracts; the domain depends on neither: `domain ← api → contracts`.
-- **The domain is pure domain logic.** It imports no contract type, neither its own module's requests and answers nor another module's interfaces. What it needs from another module it declares as its own interface, and the api implements that over the other module's contract.
-- **Each aggregate's API is an interface in the contracts**, with its token, its request classes, its answers and its events. A **provider** in the api implements it (`<aggregate>.provider.ts`): it calls the domain's services and maps the domain objects they return to the contract's answers. It is the only place that maps, so every caller gets the same answer.
-- **Services return domain objects.** A service asks repositories for aggregates and asks the aggregates' verbs. It never returns a wire shape (a date as text, a view).
+- **Projects by role.** The domain decides; the api is the edge (controllers, contract providers, adapters, migrations, handlers, publishers, running processes and the module's entry) and decides nothing. The api depends on the domain and the contracts; the domain depends on neither: `domain ← api → contracts`.
+- **The domain is pure domain logic.** It imports no contract type, neither its own module's requests and answers nor another module's interfaces or domain packages. What it needs from outside it declares as its own port (`.port.ts`), and the api implements that over the outside client or the other module's contract.
+- **Subdomains form a one-way dependency graph.** Inside `domain/`, subdomains depend strictly one way with no cycles, checked in CI.
+- **Each aggregate's API is an interface in the contracts**, with its token, its request classes, its DTOs and its events. A **provider** in the api implements it (`<aggregate>.provider.ts`): it calls the domain's services and maps the domain objects they return to DTOs using plain functions beside the provider (no reflection mapper library). It is the only place that maps, so every caller gets the same answer. If a provider only combines one or two other modules' contracts, call them directly in the provider without adding a pass-through domain service.
+- **Services return domain objects.** A service asks repositories for aggregates and asks the aggregates' verbs. It never returns a wire shape (an ISO date string, a view) and never parses raw HTTP types.
+- **Domain ownership and policy checks live in the domain.** Rules like "only the owner may act on a live account" live in the domain service (taking an `Actor`), not in a provider, so HTTP, bus handlers and in-process callers enforce the same rule. Don't pass an `Actor` into methods that ignore it.
 - **Adapters stay thin.** A controller reads the HTTP request, calls its provider and returns what it gives; it maps nothing. A bus handler does the same for an event.
 - **Every caller goes through the interface.** A page calls the controller over HTTP. Another module injects the interface's token: in one process it gets the provider itself; when the modules are separate services it gets an HTTP client implementing the same interface, which calls the controller and gets the same answer. Only that binding changes.
 - **Querying another module:** ask it directly through its interface. Keep a copy of its data, fed by its events, only where a read is too hot to ask each time. The bus carries events, not queries.
-- **A domain is cut by subdomain first**, then by kind inside each: `entities/`, `values/`, `services/`, `strategies/`, `factories/`, `repositories/`, `errors/`, only the kinds it has.
-- **An api is laid out by kind:** `controllers/`, `providers/`, `migrations/`, `handlers/`, `publishers/`, `processes/`, with the module's `.module.ts` and config at its root. Test files other than specs go in `__fixtures__` ([tests](tests.md)); `testing/` holds only the fakes other modules' tests use.
+- **A domain is cut by subdomain first**, then by kind inside each: `entities/`, `values/`, `services/`, `policies/` (or `strategies/`), `interfaces/`, `factories/`, `repositories/`, `errors/`, only the kinds it has.
+- **An api is laid out by kind:** `controllers/`, `providers/`, `adapters/`, `migrations/`, `handlers/`, `publishers/`, `jobs/` (or `processes/`), `contract/` (for `<consumer>.contract.spec.ts`), with the module's `.module.ts` and config at its root. Test files other than specs go in `__fixtures__` ([tests](tests.md)); `testing/` holds only the fakes other modules' tests use.
 - **One repository per aggregate root**, in the domain. An entity carries its own table mapping, as the ORM's decorators on its class: that is the one outside package a domain may import, and only for that. No second class or schema per table.
 
 ## HTTP
@@ -48,6 +52,13 @@ The other rules on this page, and on [code](code.md), follow from this one ([do 
 - **A controller is one aggregate,** named for it, its routes under its plural noun: `orders.controller.ts` serves `/orders`.
 - **Reads and edits are the HTTP verbs** on the resource: `GET`, `POST`, `PATCH`, `DELETE`, and `PUT` to set a value.
 - **An operation on one is `POST /<aggregate>/:id/<operation>`** in the domain's word (`/orders/:id/cancel`); one on them all sits on the collection (`POST /orders/pause`). Children stay under their parent (`/orders/:id/fills`).
+- **Every route declares its authorization explicitly** (`@Authorize(...)` or `@AllowAnonymous()`), checked statically in CI so no endpoint ships unprotected by omission. Security and policy checks fail closed when configuration is empty or missing.
+
+## External side effects and concurrency
+
+- **Persist intent before calling outside, and never clear an in-flight claim after a post-call booking error.** Record that a send or external action is in flight before calling the outside system. If the outside call succeeds and local follow-up throws, keep the claim intact and reconcile — clearing it causes a duplicate send on the next run.
+- **Acquire uniqueness checks and locks before mutating collaborators.** Claim the aggregate's row or lock before moving money or changing another module, so a refused or duplicate request never leaves partial side effects behind.
+- **In-process locks don't protect across processes.** An API server and a background worker don't share memory. Any state machine touched by more than one process uses a database lock, lease, or grace window before another process treats in-flight work as stopped.
 
 ## One code path
 
