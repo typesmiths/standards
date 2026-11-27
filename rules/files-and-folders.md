@@ -53,12 +53,13 @@ A project may add roles of its own (for example, `.venue.ts`). It lists them in 
 
 ## Folders
 
-- **Folders are subdomains first** (`routing/`, `auth/`, `billing/`), then kinds inside one (`entities/`, `services/`, `errors/`) once it holds several things of that kind. A subfolder inside a kind only when one object has several files.
-- **Each subdomain folder has an `index.ts`** that says what it exports. The `src/` root holds little but `index.ts`.
+- **Split by subdomain only when a domain has clear, sizable sub-areas** (`routing/`, `auth/`, `billing/`), then by kind inside each (`entities/`, `services/`, `errors/`) once it holds several things of that kind. A smaller domain stays flat by kind directly under `src/` — don't add a subdomain folder that repeats the module's name or leaves single-file kind folders. A subfolder inside a kind only when one object has several files.
+- **Each subdomain folder (when present) has an `index.ts`** that says what it exports. The `src/` root holds little but `index.ts`.
 - **Only spec files go next to the code.** Test data, fakes and shared test setups go in a `__fixtures__` folder next to the spec that uses them. If specs in several folders share one, it goes in the `__fixtures__` of the closest folder above them all. Code folders hold code and specs, nothing else. `e2e/` suites that drive built output sit apart.
 - **A new package exists only to manage dependencies or to stop an import cycle.** A feature is a folder, not a package.
 
 ## Packages and modules
 
 - **A package or module has one job.** A base package holds contracts; provider packages implement them. Only the composition root names a provider.
+- **Each module directory has a `README.md` and `design.svg` at its root**, symlinked to `docs/domain/<module>/` so docs live in one place and stay visible right beside the code.
 - **Dependencies run one way.** In an application, a module is split by role: `<module>.contracts` (interfaces, tokens, events and the shapes other modules and clients use), `<module>.domain` (everything that decides) and `<module>.api` (the edge: providers, controllers, migrations, handlers, the module's entry). `domain ← api → contracts`, and other modules import only `*.contracts`. More in [modules](modules.md).
