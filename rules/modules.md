@@ -65,3 +65,6 @@ The other rules on this page, and on [code](code.md), follow from this one ([do 
 ## One code path
 
 Test, paper and live run the same code. What differs (a venue, a clock, a market) is injected; product code never branches on a mode or an environment.
+
+- **Use a Polymorphic Registry instead of split-by-mode ports.** When a concept exists across live, paper and sim (venues, exchanges, payment gateways), put every implementation behind one interface declaring what it serves (for example its supported modes and optional capabilities) and collect them in one **Registry** fed by one multi-injected source/plugin port. All mode selection and isolation rules live inside the registry, so live code can never accidentally select a simulated implementation — without parallel `Paper*` / `Live*` ports or `if (mode === ...)` branches in callers ([do and don't](dos-and-donts.md)).
+- **Keep Registries separate from Repositories.** A **Registry** resolves system-level definitions or capabilities from configuration and registered plugins; a **Repository** persists per-aggregate state in storage. Don't merge lookup policy into a repository or store aggregate instances in a registry.

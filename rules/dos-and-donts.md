@@ -200,3 +200,24 @@ if (order instanceof LimitOrder) {
 	price = book.bestBid;
 }
 ```
+
+**Do use a Polymorphic Registry for mode- or capability-dependent implementations.** Put live and simulated implementations behind one interface and resolve them through one registry instead of parallel `Paper*` / `Live*` ports with `if (mode)` branches in callers ([modules](modules.md#one-code-path)).
+
+```ts
+// Do: one VenueRegistry owns mode isolation; callers stay mode-agnostic.
+const venues = await this.venues.autoConnectFor(account.mode);
+for (const venue of venues) {
+	await this.connect(account, venue);
+}
+
+// Don't: parallel ports split by mode, forcing every caller to branch.
+if (isSimulated(account.mode)) {
+	for (const venue of await this.paperVenues.list()) {
+		await this.connect(account, venue);
+	}
+} else {
+	for (const venue of await this.liveVenues.list()) {
+		await this.connect(account, venue);
+	}
+}
+```
