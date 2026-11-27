@@ -16,6 +16,7 @@
 - Minor ([modules](rules/modules.md#inside-a-module), [do's and don'ts](rules/dos-and-donts.md)): dependencies inside a subdomain point one way — model types (`values/`, `entities/`, `errors/`, `policies/`, `interfaces/`) never import from `repositories/` or `services/`, and `repositories/` never import from `services/`. Shared domain types live in `values/` or `entities/`, and pure domain calculations belong on value objects rather than static-method `.service.ts` classes.
 - Minor ([tests](rules/tests.md)): name sociable, use-case tests (the testing trophy) as the default over isolated unit tests, and separate browser tests (layout, navigation, and UX only) from coded tests (UI logic and cross-module workflows on a virtual clock).
 - Minor ([modules](rules/modules.md#inside-a-module), [files and folders](rules/files-and-folders.md#folders)): split a domain into subdomains only when it has clear, sizable sub-areas; smaller single-context domains stay flat by kind directly under `src/`. Give each module directory a `README.md` and `design.svg` at its root, symlinked to `docs/domain/<module>/`.
+- Changes rules ([modules](rules/modules.md#how-modules-meet), [tests](rules/tests.md)): run one `<contract>.contract.spec.ts` conformance suite per published contract in the provider (proving real providers and exported `Fake*` stand-ins agree) instead of duplicating the suite per consumer; keep consumer-specific expectations in the consumer's own sociable tests.
 
 ## 0.4.0
 
