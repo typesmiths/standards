@@ -61,4 +61,5 @@ A project may add roles of its own (for example, `.venue.ts`). It lists them in 
 ## Packages and modules
 
 - **A package or module has one job.** A base package holds contracts; provider packages implement them. Only the composition root names a provider.
+- **Each module directory has a `README.md` and `design.svg` at its root**, symlinked to `docs/domain/<module>/` so docs live in one place and stay visible right beside the code.
 - **Dependencies run one way.** In an application, a module is split by role: `<module>.contracts` (interfaces, tokens, events and the shapes other modules and clients use), `<module>.domain` (everything that decides) and `<module>.api` (the edge: providers, controllers, migrations, handlers, the module's entry). `domain ← api → contracts`, and other modules import only `*.contracts`. More in [modules](modules.md).

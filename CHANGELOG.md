@@ -15,7 +15,7 @@
 - Minor ([code](rules/code.md#the-environment), [use it in a project](README.md#use-it-in-a-project)): secrets come from the environment or a secret store; add the starter CI/lint check list (`curly: "all"`, `knip`, boundary checks exempting `__fixtures__/`).
 - Minor ([modules](rules/modules.md#inside-a-module), [do's and don'ts](rules/dos-and-donts.md)): dependencies inside a subdomain point one way — model types (`values/`, `entities/`, `errors/`, `policies/`, `interfaces/`) never import from `repositories/` or `services/`, and `repositories/` never import from `services/`. Shared domain types live in `values/` or `entities/`, and pure domain calculations belong on value objects rather than static-method `.service.ts` classes.
 - Minor ([tests](rules/tests.md)): name sociable, use-case tests (the testing trophy) as the default over isolated unit tests, and separate browser tests (layout, navigation, and UX only) from coded tests (UI logic and cross-module workflows on a virtual clock).
-- Minor ([modules](rules/modules.md#inside-a-module), [files and folders](rules/files-and-folders.md#folders)): split a domain into subdomains only when it has clear, sizable sub-areas; smaller single-context domains stay flat by kind directly under `src/`.
+- Minor ([modules](rules/modules.md#inside-a-module), [files and folders](rules/files-and-folders.md#folders)): split a domain into subdomains only when it has clear, sizable sub-areas; smaller single-context domains stay flat by kind directly under `src/`. Give each module directory a `README.md` and `design.svg` at its root, symlinked to `docs/domain/<module>/`.
 
 ## 0.4.0
 
