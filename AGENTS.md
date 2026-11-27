@@ -12,7 +12,7 @@ Shared rules for Typesmiths' TypeScript projects, published to npm as `@decohere
 
 ## Releasing
 
-Edits collect on `main`, unreleased. A change to `rules/` adds its lines to [CHANGELOG.md](CHANGELOG.md) under the next version's heading, `## 0.3.0`, saying whether it is a patch, minor or major ([versions](README.md#versions)). To release, raise `version` in `package.json` on `main` to match, then open a pull request from `main` into `release` and add it to the merge queue. The merge publishes: [publish](.github/workflows/publish.yml) puts the version on npm and tags it `v<version>`, so `release` is what's on npm. CI fails a release that changes `rules/` but keeps a version npm already has. Never publish or tag by hand.
+Edits collect on `main`, unreleased. A change to `rules/` adds its lines to [CHANGELOG.md](CHANGELOG.md) under the next version's heading, `## x.y.z`, saying whether it is a patch, minor or major ([versions](README.md#versions)). To release, raise `version` in `package.json` on `main` to match, then open a pull request from `main` into `release` and add it to the merge queue. The merge publishes: [publish](.github/workflows/publish.yml) puts the version on npm and tags it `v<version>`, so `release` is what's on npm. CI fails a release that changes `rules/` but keeps a version npm already has. Never publish or tag by hand.
 
 ## Checks
 

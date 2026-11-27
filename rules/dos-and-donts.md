@@ -143,17 +143,45 @@ for (const landed of await this.account.newTransfers()) {
 **Do ask another module for what you want, not how to do it.** It decides how, and tells you what happened ([modules](modules.md#how-modules-meet)).
 
 ```ts
-// Do: the treasury asks Funding for money back; Funding tells it each send.
-await this.funding.giveBack(account, 300);
-// …and, in Funding, as each send leaves its Safe:
-await this.treasury.givenBack({ account, module: "funding", amount, from: safe.id, tx });
+// Do: the treasury asks the department for money back; the department reports each send.
+await this.department.giveBack(account, 300);
+// …and, in the department, as each send leaves its wallet:
+await this.treasury.givenBack({ account, department: "sales", amount, from: wallet.id, tx });
 
-// Don't: the treasury picks Funding's account, finds Funding's code by the exchange's name and runs its steps.
-const withdrawals = this.withdrawals.find((w) => w.venues.includes(place.venue));
+// Don't: the treasury picks the department's account, looks up its code by bank name and runs its steps.
+const withdrawals = this.withdrawals.find((w) => w.banks.includes(place.bank));
 const look = await withdrawals.send(place, cashOut);
 if (look.state === "sent") {
 	await this.sendOnToTreasury(place, look);
 }
+```
+
+**Don't extract a one-method calculation or single-caller query into its own service.** Put calculations on the object they are about, and keep read projections over the same repositories on one cohesive service ([code](code.md#one-class-per-job)).
+
+```ts
+// Do: the order answers whether it is expired; the service works with the repository.
+if (order.isExpired(this.clock.now())) {
+	order.expire();
+}
+
+// Don't: a 10-line injected service wrapping one check on someone else's fields.
+@injectable()
+export class OrderExpiryService {
+	public constructor(@inject(ClockToken) private readonly clock: Clock) {}
+	public isExpired(order: { expiresAt: Date }): boolean {
+		return order.expiresAt < this.clock.now();
+	}
+}
+```
+
+**Don't decorate a class with `@injectable()` and construct it with `new`.** Either register and inject it through DI, or fold it into the class that owns that work ([code](code.md#one-class-per-job)).
+
+```ts
+// Do: injected once through the constructor, or a method on its owner.
+public constructor(@inject(ExchangeConnections) private readonly connections: ExchangeConnections) {}
+
+// Don't: @injectable() on the class, never registered, and constructed with new by every caller.
+const account = await new PlaceAccounts(this.venues).at(connection);
 ```
 
 **Do put code that only one type needs in that type's class.** Shared code calls a method on the object; it never checks which type it has ([code](code.md#one-class-per-job)).

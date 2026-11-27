@@ -43,6 +43,11 @@ The rules every Typesmiths TypeScript project follows: classes with one job each
 
 5. **Keep the project's own guide short.** It lists what is particular to the project (its modules, extra file roles, where it differs on purpose) and links here for everything else. It doesn't copy these rules: a copy drifts.
 
+6. **Wire up the mechanical checks in CI.** Rules that aren't checked drift. Turn on:
+   - linter rule `curly: "all"` ([code](rules/code.md#language));
+   - dead-code checks (`knip` and `knip --production`);
+   - boundary scripts: no importing another module's `*.domain` or `*.api`, no cycles between subdomains in `domain/`, no `process.env` in `*.domain`, and every HTTP route declares `@Authorize` or `@AllowAnonymous`. Any check that exempts test files should exempt both `*.spec.ts` and `__fixtures__/`.
+
 ## Versions
 
 Semantic versions. A patch rewords without changing a rule. A minor adds a rule or an example. A major changes or removes a rule, so code that followed the old one breaks the new one; its changelog entry says what to change. Before 1.0, a minor may also change a rule.

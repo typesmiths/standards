@@ -9,4 +9,5 @@ Most projects don't follow these rules everywhere yet. They get there one change
 - **Measure, and only go down.** Where a project counts its breaks of these rules, CI fails when a count rises, and a change that fixes one lowers the count it is measured against.
 - **A move that needs a decision stops for it.** If it's unclear who owns a fact, ask the project's owner rather than guess.
 - **Only build the end result.** Don't write code to handle leftovers from the old way: old keys, leftover money, half-moved data. Clean those up by hand with the product's normal tools, and fix whatever caused them. Temporary code tends to stay forever.
+- **Schema changes expand before they contract.** Never drop or rename a table or column that the currently deployed version still reads or writes. Add the new shape first, deploy code that stops using the old one, and drop the old shape in a later release.
 - **Finish the whole change before showing it.** Update every caller, test, story and document, then show it. Don't stop halfway with a list of what's left.
